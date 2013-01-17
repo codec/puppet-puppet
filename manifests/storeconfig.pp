@@ -16,9 +16,8 @@ class puppet::storeconfig (
     $dbpassword = '',
     $dbserver   = 'localhost',
     $dbsocket   = ''
-) {
-
-  include puppet
+) inherits puppet {
+  
   include puppet::params
 
   #$puppet::storeconfigs = 'true' # called from puppet::server only if storeconfigs is on

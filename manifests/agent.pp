@@ -34,9 +34,7 @@ class puppet::agent(
   $report_server  = hiera('puppet::agent::server'),
   $manage_service = undef,
   $method         = 'cron',
-) {
-
-  include puppet
+) inherits puppet {
   require puppet::package
 
   case $method {
