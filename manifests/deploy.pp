@@ -1,4 +1,9 @@
-class puppet::deploy($ensure = 'present', $frequency = 6, $interval_in_minutes = 60) {
+class puppet::deploy (
+  $ensure               = 'present',
+  $source               = 'puppet:///modules/puppet/puppet_deploy.rb',
+  $frequency            = 6,
+  $interval_in_minutes  = 60
+) {
 
   # Since 3aefec78893778f020759f947659e0f2bf30d776 we have
   # librarian-puppet support. See http://librarian-puppet.com/
@@ -15,20 +20,25 @@ class puppet::deploy($ensure = 'present', $frequency = 6, $interval_in_minutes =
     before => Class['puppet::server'],
   }
 
-  file { "/usr/local/bin/puppet_deploy.rb":
+  # split_filename is ugly, but necessary :(
+  # this is also kinda wrong
+  $split_filename   = split($source, '/')
+  $deploy_filename  = $split_filename[-1]
+
+  file { "/usr/local/bin/${deploy_filename}":
     ensure => $ensure,
     owner  => root,
     group  => root,
     mode   => 0750,
-    source => "puppet:///modules/puppet/puppet_deploy.rb",
+    source => $source,
   }
 
-  cron { "Puppet: puppet_deploy.rb":
+  cron { "Puppet: ${deploy_filename}":
     ensure  => $ensure,
     user    => root,
-    command => '/usr/local/bin/puppet_deploy.rb 1>/dev/null 2>/dev/null',
+    command => '/usr/local/bin/${deploy_filename} 1>/dev/null 2>/dev/null',
     minute  => '*/20',
-    require => File["/usr/local/bin/puppet_deploy.rb"];
+    require => File["/usr/local/bin/${deploy_filename}"];
   }
 
   if $ensure == 'present' {
