@@ -43,7 +43,7 @@ class puppet::server (
     $ca                 = false,
     $bindaddress        = '::',
     $enc                = '',
-    $enc_exec           = ''
+    $enc_exec           = '',
     $monitor_server = hiera('puppet_server_monitor', 'true'),
   ) inherits puppet {
 
